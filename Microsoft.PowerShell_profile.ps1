@@ -6,7 +6,7 @@ function prompt {
     $status = ""
     $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     $files = (Get-ChildItem  | Measure-Object -Property Length -sum)
-    $directories=(Get-ChildItem -Directory | Measure-Object)
+    $directories = (Get-ChildItem -Directory | Measure-Object)
     $nDirectories = $directories.count
     $nfiles = $files.count
     $size = (& { If (($files.sum / 1gb) -gt 1 ) { ("{0:N1}G" -f ($files.sum / 1gb)) } Else { ("{0:N1}M" -f ($files.sum / 1Mb)) } })
@@ -38,11 +38,12 @@ function prompt {
         Write-Host " (elevated) "-ForegroundColor DarkBlue -NoNewline
     }
     else {
-        Write-Host "($,$size,d-$nDirectories,f-$nfiles) " -ForegroundColor DarkCyan -NoNewline
+        Write-Host "($,$nDirectories/$nfiles) " -ForegroundColor DarkCyan -NoNewline
     }
 
     #current directory
-    Write-Host "{$PWD}" -ForegroundColor Yellow -NoNewline
+    # Write-Host "{$PWD}" -ForegroundColor Yellow -NoNewline
+    Write-Host "[📂 $(Split-Path -Path (Get-Location) -Leaf)]" -ForegroundColor Yellow -NoNewline
 
     if ($BranchName.length -gt 0) {
         Write-Host "(*$BranchName $status)" -ForegroundColor Green
@@ -57,3 +58,15 @@ function prompt {
     Write-Host "└───" -ForegroundColor Magenta -BackgroundColor Black -NoNewline
     return ":"
 } #end prompt function
+
+
+function to($p) {
+    $BasePath = "G:/projects"
+    $b = $BasePath + "/" + $p
+    if (Test-Path -Path $b) {
+        Set-Location $b
+    }
+    else {
+        Write-Host "Folder $p doesn't exist in projects." -ForegroundColor Red
+    }
+}
